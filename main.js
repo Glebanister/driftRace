@@ -1,4 +1,4 @@
-const FRAME_RATE = 60;
+const FRAME_RATE = 97;
 const POP_SIZE = 1000;
 const GENERATIONS = 20000;
 const PACE = 0.05;
@@ -10,19 +10,17 @@ const ALIVE_PART = 0.4;
 var population;
 var carTexture1;
 var carTexture2;
-var myCar;
-var myWeapon;
-var enemyCar;
-var enemyWeapon;
 let start;
 var bestCar;
 var speedSlider;
 var shootSlider;
 var speedLimitSlider;
 var roundTimeSlider;
+var timeFlowSlider;
 var shootPenny = 0.02;
 var speedReward = 0.02;
 var speedLimit = 3;
+var timeFlow = 2;
 
 function genNewPop() {
     p = [];
@@ -70,8 +68,8 @@ function setup() {
     HEIGHT = windowHeight - 20;
     frameRate(FRAME_RATE);
     createCanvas(WIDTH, HEIGHT);
-    carTexture1 = loadImage("car.png");    
-    carTexture2 = loadImage("car1.png");
+    carTexture1 = loadImage("textures/car.png");    
+    carTexture2 = loadImage("textures/car1.png");
     population = genNewPop();
     start = new Date();
     console.log("Gen 1");
@@ -83,6 +81,8 @@ function setup() {
     speedLimitSlider.position(100, 80);
     roundTimeSlider = createSlider(1, 100, ROUND_TIME, 1);
     roundTimeSlider.position(100, 110);
+    timeFlowSlider = createSlider(0.5, 100, timeFlow, 0.5);
+    timeFlowSlider.position(100, 140);
 }
 
 let genNum = 1;
@@ -92,12 +92,13 @@ function updateSliders() {
     speedLimit = speedLimitSlider.value();
     shootPenny = shootSlider.value();
     ROUND_TIME = roundTimeSlider.value();
+    timeFlow = timeFlowSlider.value();
 }
 
 function draw() {
     updateSliders();
     let now = new Date();
-    if (now - start > ROUND_TIME * 1000) {
+    if (now - start > ROUND_TIME * 1000 / timeFlow) {
         for (let i = 0; i < population.length; i += 2) {
             population[i].total += (100 - population[i + 1].car.health);
             population[i].total -= (100 - population[i].car.health);
@@ -123,12 +124,14 @@ function draw() {
     text("Shoot penny", 0, 60);
     text("Min speed", 0, 90);
     text("Round time", 0, 120);
+    text("Time flow", 0, 150);
     text(speedReward, 230, 30);
     text(shootPenny, 230, 60);
     text(speedLimit, 230, 90);
     text(ROUND_TIME, 230, 120);
+    text(timeFlow, 230, 150);
     textSize(30);
-    text(ROUND_TIME - Math.floor((now - start) / 1000) - 1, WIDTH - 120, 50);
+    text(ROUND_TIME - Math.floor((now - start) / 1000 * timeFlow) - 1, WIDTH - 120, 50);
     text("Gen " + String(genNum), WIDTH - 120, 100);
     for (let i = 0; i < population.length; i += 1) {
         population[i].predict();

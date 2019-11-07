@@ -29,7 +29,7 @@ class Car {
         this.frontResForce = 1.0;
         this.sideResForce = 8.0;
         this.m = 2;
-        this.delta = 1 / FRAME_RATE;
+        this.delta = 1 / (FRAME_RATE);
         this.updateRemotion = false;
         this.remote = {
             forw: false,
@@ -39,7 +39,7 @@ class Car {
             one: false,
             two: false,
             three: false,
-            brake: false 
+            brake: false
         };
         this.health = 100;
         this.alive = true;
@@ -74,7 +74,7 @@ class Car {
     }
 
     getSpeed() {
-        return sqrt(this.pX ** 2 + this.pY ** 2) / this.m;
+        return sqrt(this.pX ** 2 + this.pY ** 2) / this.m / timeFlow;
     }
 
     getSpeedX() {
@@ -124,13 +124,13 @@ class Car {
         }
 
         if (this.turnLeft) {
-            this.angle -= this.rotateMax;
+            this.angle -= this.rotateMax * timeFlow;
         } else if (this.turnRight) {
-            this.angle += this.rotateMax;
+            this.angle += this.rotateMax * timeFlow;
         }
 
-        let pX = cos(this.angle) * this.delta;
-        let pY = sin(this.angle) * this.delta;
+        let pX = cos(this.angle) * (this.delta / timeFlow);
+        let pY = sin(this.angle) * (this.delta / timeFlow);
 
         if (this.remote.one) {
             this.pX += pX * this.force1;
@@ -156,45 +156,30 @@ class Car {
         let fResFront = currentFrontResForce * (Math.PI / 2 - diffAngle(this.dirX, this.dirY, cos(dirFront), sin(dirFront))) / Math.PI * 2;
         let dirSide = dirFront + Math.PI / 2;
         let fResSide = this.sideResForce * (Math.PI / 2 - diffAngle(this.dirX, this.dirY, cos(dirSide), sin(dirSide))) / Math.PI * 2;
-
-//        console.log("dirFront", dirFront, "dirSpeed", Math.atan2(this.dirY, this.dirX));
-
-//        console.log("fResFront", fResFront, "fResSide", fResSide, keyIsDown(this.upBtn1));
-
         let fResFrontX = fResFront * cos(dirFront);
         let fResFrontY = fResFront * sin(dirFront);
         let fResSideX = fResSide * cos(dirSide);
         let fResSideY = fResSide * sin(dirSide);
-
-//        console.log("fResSideX", fResSideX, "fResSideY", fResSideY);
-
         let fResX = abs(fResFrontX) + abs(fResSideX);
         let fResY = abs(fResFrontY) + abs(fResSideY);
-
-//        console.log("Before pX", this.pX, "Before pY", this.pY);
-
-        if (abs(this.pX) < abs(fResX * this.delta)) {
+        if (abs(this.pX) < abs(fResX * (this.delta / timeFlow))) {
             this.pX = 0.0;
-        } else {   
+        } else {
             if (this.pX > 0) {
-                this.pX -= fResX * this.delta;
+                this.pX -= fResX * (this.delta / timeFlow);
             } else {
-                this.pX += fResX * this.delta;
+                this.pX += fResX * (this.delta / timeFlow);
             }
         }
-        if (abs(this.pY) < abs(fResY * this.delta)) {
+        if (abs(this.pY) < abs(fResY * (this.delta / timeFlow))) {
             this.pY = 0.0;
-        } else {   
+        } else {
             if (this.pY > 0) {
-                this.pY -= fResY * this.delta;
+                this.pY -= fResY * (this.delta / timeFlow);
             } else {
-                this.pY += fResY * this.delta;
+                this.pY += fResY * (this.delta / timeFlow);
             }
         }
-
-//        console.log("After pX", this.pX, "After pY", this.pY);
-//        console.log('');
-
         let speedX = this.pX / this.m;
         let speedY = this.pY / this.m;
         this.x += speedX;

@@ -16,7 +16,7 @@ class Weapon {
     }
 
     isReady() {
-        return (new Date()) - this.lastShot > this.reloadTime;
+        return (new Date()) - this.lastShot > this.reloadTime / timeFlow;
     }
 
     updatePos(enemies) {

@@ -31,8 +31,8 @@ class Bullet {
             delete this;
             return false;
         }
-        this.x += cos(this.angle) * this.speed + this.speedX;
-        this.y += sin(this.angle) * this.speed + this.speedY;
+        this.x += (cos(this.angle) * this.speed + this.speedX) * timeFlow;
+        this.y += (sin(this.angle) * this.speed + this.speedY) * timeFlow;
         if (!this.inside()) {
             delete this;
             return false;
